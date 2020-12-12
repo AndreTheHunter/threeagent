@@ -12,13 +12,13 @@
    (print-tree node ""))
   ([^Node node p]
    (let [is-reactive (some? (.-reaction node))]
-    (println p "|-"
-              (.-key node)
-              (str "comp:" (:component-key (.-data node)))
-              (str "dirty:" (.-dirty node))
-              (str "reactive:" is-reactive))
-    (doseq [child (es6-iterator-seq (.values (.-children node)))]
-      (print-tree child (str p "\t"))))))
+     (println p "|-"
+       (.-key node)
+       (str "comp:" (:component-key (.-data node)))
+       (str "dirty:" (.-dirty node))
+       (str "reactive:" is-reactive))
+     (doseq [child (es6-iterator-seq (.values (.-children node)))]
+       (print-tree child (str p "\t"))))))
 
 (defn node->path
   ([node]
@@ -29,7 +29,7 @@
      (reverse path))))
 
 (defn get-key [key meta] (:key meta key))
-      
+
 (deftype Node [^Node parent depth key meta data dirty render reaction children]
   Object
   (terminal? [this]
@@ -65,27 +65,27 @@
   (let [node ^Node (.-node ctx)
         scene ^Scene (.-scene ctx)]
     (.enqueueForRender scene node)))
-    
+
 (defn- extract-comp-config [config]
   (let [c (transient config)]
     (persistent! (reduce #(dissoc! %1 %2) c non-component-keys))))
 
 (defn- node-data [comp-key comp-config]
-  {:position (:position comp-config [0 0 0])
-   :rotation (:rotation comp-config [0 0 0])
-   :scale (:scale comp-config [1.0 1.0 1.0])
-   :cast-shadow (:cast-shadow comp-config false)
-   :receive-shadow (:receive-shadow comp-config false)
-   :component-key comp-key
-   :component-config (extract-comp-config comp-config)}) ;(apply dissoc comp-config non-component-keys)})
+  {:position         (:position comp-config [0 0 0])
+   :rotation         (:rotation comp-config [0 0 0])
+   :scale            (:scale comp-config [1.0 1.0 1.0])
+   :cast-shadow      (:cast-shadow comp-config false)
+   :receive-shadow   (:receive-shadow comp-config false)
+   :component-key    comp-key
+   :component-config (extract-comp-config comp-config)})    ;(apply dissoc comp-config non-component-keys)})
 
 (defmulti ->node (fn [^Scene scene ^Node parent key [l & r]]
                    (cond
-                      (keyword? l) :keyword
-                      (fn? l) :fn
-                      (sequential? l) :seq
-                      (and (nil? l) (nil? r)) :empty-list
-                      :else nil)))
+                     (keyword? l) :keyword
+                     (fn? l) :fn
+                     (sequential? l) :seq
+                     (and (nil? l) (nil? r)) :empty-list
+                     :else nil)))
 
 (defmethod ->node :default [scene parent key form]
   (println "Invalid object form:" form))
@@ -153,12 +153,12 @@
         first-child (first rs)
         comp-config (if (map? first-child) first-child {})
         children (filter #(and (some? %) (not (empty? %)))
-                         (if (map? first-child) (rest rs) rs))]
-    {:key key
-     :data (node-data comp-key comp-config)
-     :form form
+                   (if (map? first-child) (rest rs) rs))]
+    {:key           key
+     :data          (node-data comp-key comp-config)
+     :form          form
      :children-keys (map-indexed #(vector (or (:key (meta %2)) %1) %2)
-                                children)}))
+                      children)}))
 
 (defn- dispose-node! [^Node node]
   (set! (.-disposed node) true)
@@ -209,24 +209,24 @@
               current-keys (set (es6-iterator-seq (.keys children)))
               new-keys (set (map first (:children-keys shallow-node)))
               dropped-keys (clojure.set/difference current-keys new-keys)]
-            (set! (.-data node) new-data)
-            (when render-fn
-              (set! (.-form node) (into [render-fn] (rest new-form))))
-            (set! (.-renderedForm node) new-form)
-            (.push changelog [node :update old-data new-data])
-            ;; Remove children that no longer exist
-            (doseq [child-key dropped-keys]
-              (let [child-node (.get children child-key)]
-                (remove-node! child-node changelog))
-              (.delete children child-key))
-            ;; Update existing children and add new children
-            (doseq [[child-key child-form] (:children-keys shallow-node)]
-              (if-let [child (.get children child-key)]
-                ;; Update existing child
-                (update-node! scene child child-form changelog)
-                ;; Add new child
-                (when-let [child-node (add-node! scene node child-key child-form changelog)]
-                  (.set children child-key child-node)))))))))
+          (set! (.-data node) new-data)
+          (when render-fn
+            (set! (.-form node) (into [render-fn] (rest new-form))))
+          (set! (.-renderedForm node) new-form)
+          (.push changelog [node :update old-data new-data])
+          ;; Remove children that no longer exist
+          (doseq [child-key dropped-keys]
+            (let [child-node (.get children child-key)]
+              (remove-node! child-node changelog))
+            (.delete children child-key))
+          ;; Update existing children and add new children
+          (doseq [[child-key child-form] (:children-keys shallow-node)]
+            (if-let [child (.get children child-key)]
+              ;; Update existing child
+              (update-node! scene child child-form changelog)
+              ;; Add new child
+              (when-let [child-node (add-node! scene node child-key child-form changelog)]
+                (.set children child-key child-node)))))))))
 
 (defn- render-node! [^Scene scene ^Node node changelog]
   (let [form (.-form node)]

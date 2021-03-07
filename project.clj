@@ -1,3 +1,5 @@
+(def three-version "0.126.1")
+(def figwheel-version "0.5.20")
 (defproject doughamil/threeagent "0.0.7-SNAPSHOT"
   :description "Build Three.js apps in a reagent-like fashion"
   :url "https://github.com/DougHamil/threeagent"
@@ -12,9 +14,9 @@
                                       :username :env
                                       :password :env}]]
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [medley "1.0.0"]
-                 [reagent "0.8.1"]
+  :dependencies [[org.clojure/clojure "1.10.3"]
+                 [medley "1.3.0"]
+                 [reagent "1.0.0"]
                  [karma-reporter "3.1.0"]]
 
 
@@ -22,18 +24,18 @@
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-doo "0.1.10"]
-            [lein-figwheel "0.5.19"]]
+            [lein-figwheel ~figwheel-version]]
 
-  :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                  [cider/cider-nrepl "0.20.1-SNAPSHOT"]
-                                  [cider/piggieback "0.3.10"]
-                                  [figwheel "0.5.18"]
+  :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.10.773"]
+                                  [cider/cider-nrepl "0.25.9"]
+                                  [cider/piggieback "0.5.2"]
+                                  [figwheel ~figwheel-version]
                                   [doo "0.1.11"]
                                   [karma-reporter "3.1.0"]]}
-             :test {:dependencies [[thheller/shadow-cljs "2.10.15"]]
+             :test {:dependencies [[thheller/shadow-cljs "2.11.20"]]
                     :source-paths ["src/main" "src/test"]}}
 
-  :npm {:dependencies [[three "0.100.0"]]}
+  :npm {:dependencies [[three ~three-version]]}
 
   :doo {:paths {:karma "node_modules/.bin/karma"}}
 
@@ -54,7 +56,11 @@
                         :asset-path "js/out"
                         :aot-cache false
                         :install-deps true
-                        :npm-deps {:three "0.100.0"}}}
+                        :npm-deps {:three ~three-version}}}
+            ;;FIXME compiler error:
+            ;; ERROR: JSC_LANGUAGE_FEATURE. This language feature is only supported for ECMASCRIPT8 mode or better: async function. at /Users/andre/Projects/threeagent/node_modules/three/build/three.module.js line 21991 : 19
+            ;; ERROR: JSC_LANGUAGE_FEATURE. This language feature is only supported for ECMASCRIPT8 mode or better: async function. at /Users/andre/Projects/threeagent/node_modules/three/build/three.module.js line 22010 : 4
+            ;; ERROR: JSC_LANGUAGE_FEATURE. This language feature is only supported for ECMASCRIPT8 mode or better: async function. at /Users/andre/Projects/threeagent/node_modules/three/build/three.module.js line 22027 : 20
             {:id "dev"
              :source-paths ["src/main" "src/dev"]
              :figwheel {:on-jsload "threeagent.dev.core/on-js-reload"}
@@ -66,7 +72,7 @@
                         :asset-path "js/out"
                         :aot-cache false
                         :install-deps true
-                        :npm-deps {:three "0.118.0"}}}]})
+                        :npm-deps {:three ~three-version}}}]})
                         
 
                         

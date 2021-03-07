@@ -30,6 +30,9 @@
 
 (defn get-key [key meta] (:key meta key))
 
+;;FIXME
+;; Cannot infer target type in expression (. (. Node -prototype) -terminal?)
+;; Cannot infer target type in expression (. (. Node -prototype) -for-each-child)
 (deftype Node [^Node parent depth key meta data dirty render reaction children]
   Object
   (terminal? [this]
@@ -38,6 +41,8 @@
     (doseq [child (es6-iterator-seq (.values children))]
       (f child))))
 
+;;FIXME
+;; Cannot infer target type in expression (. (. Scene -prototype) -enqueueForRender)
 (deftype Scene [root renderQueue]
   Object
   (enqueueForRender [this ^Node node]

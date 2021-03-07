@@ -159,6 +159,7 @@
       (apply-virtual-scene-changes! context changelog)
       ;; Fetch camera after applying the scene changes since it might have been updated
       (let [camera (find-active-camera context)]
+        ;FIXME THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.
         ;; Render ThreeJS Scene
         (.render renderer scene-root camera))
       (when after-render-cb (after-render-cb delta-time)))))

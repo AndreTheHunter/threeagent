@@ -43,8 +43,6 @@
                   :color 0xFFFFFF
                   :intensity 2.0}]
    [add-remove-check-wrapper]
-   [:object {:position [0 2 -10]}
-    [counter]]
    [:object {:position [0 0 -10]}
     [:object {:position [2.25 0 0]}
       [wave "red" 10]]
